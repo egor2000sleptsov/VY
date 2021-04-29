@@ -1,51 +1,97 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import s from './Editor.module.css'
+// import ButtonShape from "./ButtonShape/ButtonShape";
+import {Layer, Line, Rect, Stage} from "react-konva";
+
 
 function Editor(props) {
-    const editorRef = React.createRef()
+    const canvas = React.createRef()
+    const layer = React.createRef()
+    const shapeRef = useRef(null)
+    const [drawing, setDrawing] = useState(props.drawing)
+    const [queue, setQueue] = useState([])
+    const [shape, setShape] = useState(null)
 
-    //Присваивание начальных координат
-    const setCoordinates = (e, x1, y1) => {
-        // let ref = editorRef.current
-        let x = e.pageX,
-            y = e.pageY
-        console.log(`${x - x1}:${y - y1}`)
-        props.setCoordinate({x: x - x1, y: y - y1})
+    const mouseDownHandler = (e) => {
+        setDrawing(true)
+        props.setDrawing(!drawing)
+
+
+        setShape(<Rect
+            x={canvas.current.getPointerPosition().x}
+            y={canvas.current.getPointerPosition().y}
+            width={0}
+            height={0}
+            stroke="black"
+            ref={shapeRef}
+        />)
+
     }
-    //Присваивание текущих координат
-    const setCurrentCoordinates = (e, x1, y1) => {
-        // let ref = editorRef.current
-        if (e.buttons === 1){
-            let x = e.pageX,
-                y = e.pageY
-            console.log(`${x - x1}:${y - y1}`)
-            console.log(e.buttons)
-            props.setCurrentCoordinate({x: x - x1, y: y - y1})
+    const mouseMoveHandler = (e) => {
+        if (!drawing) return false
+        const newWidth = canvas.current.getPointerPosition().x - shape.props.x
+        const newHeight = canvas.current.getPointerPosition().y - shape.props.y
+        setShape(<Rect
+            x={shape.props.x}
+            y={shape.props.y}
+            width={newWidth}
+            height={newHeight}
+            stroke="black"
+            ref={shapeRef}
+        />)
+        shapeRef.current.to({
+            width: canvas.current.getPointerPosition().x - shape.props.x,
+            height: canvas.current.getPointerPosition().y - shape.props.y
+        })
+        // const newWidth = canvas.current.getPointerPosition().x - shape.props.x
+        // const newHeight = canvas.current.getPointerPosition().y - shape.props.y
+        // setShape(<Rect
+        //     x={shape.props.x}
+        //     y={shape.props.y}
+        //     width={newWidth}
+        //     height={newHeight}
+        //     stroke="black"
+        // />)
+    }
+
+    const mouseUpHandler = (e) => {
+        setDrawing(false)
+        props.setDrawing(!drawing)
+        setQueue([...queue, shape])
+        setShape(null)
+    }
+
+    const debug = () => {
+        debugger
+    }
+
+    const mouseOut = () => {
+        if (drawing) {
+            setDrawing(false)
+            props.setDrawing(!drawing)
+            setShape(null)
         }
-        // props.setCurrentCoordinate({x:x-x1,y:y-y1})
-    }
+    };
 
     return (
         <div>
-            editor <br/>
-            <div>
-                <canvas id="editor" className={s.editor} height="300" width="900" ref={editorRef}
-                        onClick={(event) => {
-                            setCoordinates(event, editorRef.current.offsetLeft, editorRef.current.offsetTop)
-                        }}
-
-                        onMouseMove={(event) => {
-                            setCurrentCoordinates(event, editorRef.current.offsetLeft, editorRef.current.offsetTop)
-                        }}
-
+            <button onClick={debug}>debugger</button>
+            <div onMouseOut={mouseOut}>
+                <Stage
+                    className={s.canvas}
+                    ref={canvas}
+                    width={1000}
+                    height={1000}
+                    onMouseDown={mouseDownHandler}
+                    onMouseUp={mouseUpHandler}
+                    onMousemove={mouseMoveHandler}
                 >
-                    Обнови браузер
-                </canvas>
+                    <Layer ref={layer}>
+                        {queue}
+                        {shape}
+                    </Layer>
+                </Stage>
             </div>
-            <button onClick={(event) => {
-                console.log(props)
-            }}>click me
-            </button>
         </div>
     );
 }
