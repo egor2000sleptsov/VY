@@ -4,14 +4,13 @@ import {connect} from "react-redux";
 import Editor from "./Editor";
 import {
     setCoordinateActionCreater,
-    setCurrentCoordinateActionCreater,
-    setDrawingActionCreator
+    setCurrentCoordinateActionCreater, setCurrentShapeActionCreator,
+    setDrawingActionCreator, setQueueActionCreator
 } from "../../redux/EditorReducer";
 
 let mapStateToProps = (store) => {
     return {
-        // queue: [...store.queue],
-        queue: store.editor.queue,
+        queue: [...store.editor.queue],
         currentShape: store.editor.currentShape,
         coordinate: {...store.editor.coordinate},
         currentCoordinate: {...store.editor.currentCoordinate},
@@ -24,7 +23,9 @@ let mapDispatchToProps = (dispatch) => {
     return {
         setCoordinate: value => dispatch(setCoordinateActionCreater(value)),
         setCurrentCoordinate: value => dispatch(setCurrentCoordinateActionCreater(value)),
-        setDrawing: value => dispatch(setDrawingActionCreator(value))
+        setDrawing: value => dispatch(setDrawingActionCreator(value)),
+        setQueue: value => dispatch(setQueueActionCreator(value)),
+        setCurrentShape: value => dispatch(setCurrentShapeActionCreator(value))
     }
 }
 const EditorContainer = connect(mapStateToProps, mapDispatchToProps)(Editor)

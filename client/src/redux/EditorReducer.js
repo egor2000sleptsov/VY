@@ -1,6 +1,9 @@
 const setCoordinate = 'setCoordinate'
 const setCurrentCoordinate = 'setCurrentCoordinate'
 const setDrawing = 'setDrawing'
+const setCurrentShape = 'setCurrentShape'
+const setQueue = 'setQueue'
+
 
 let initialState = {
     currentShape: "Line",
@@ -13,10 +16,17 @@ let initialState = {
         x: 0,
         y: 0
     },
-    queue: [1, 2],
+    queue: [{
+        id: 0,
+        type: "Line",
+        x: 100,
+        y: 100,
+        width: 100,
+        height: 100
+    }],
     shapes: [
-        "Стена",
-        "Прямоугольник"
+        "Line",
+        "Rect"
     ]
 }
 
@@ -25,7 +35,7 @@ const editorReducer = (state = initialState, action) => {
         ...state,
         coordinate: {...state.coordinate},
         currentCoordinate: {...state.currentCoordinate},
-        queue: []
+        queue: [...state.queue]
     }
 
     switch (action.type) {
@@ -41,12 +51,22 @@ const editorReducer = (state = initialState, action) => {
             return stateCopy
         case setDrawing:
             stateCopy.drawing = action.value
+            return stateCopy
+        case setCurrentShape:
+            stateCopy.currentShape = action.value
+            return stateCopy
+        case setQueue:
+            stateCopy.queue = [...stateCopy.queue, {...action.value}]
+            return stateCopy
         default:
             return state
     }
 }
 
-export const setCoordinateActionCreater = (value) => ({type: setCoordinate, value: value})
-export const setCurrentCoordinateActionCreater = (value) => ({type: setCurrentCoordinate, value: value})
-export const setDrawingActionCreator = (value) => ({type: setDrawing, value: value})
+export const setCoordinateActionCreater = value => ({type: setCoordinate, value: value})
+export const setCurrentCoordinateActionCreater = value => ({type: setCurrentCoordinate, value: value})
+export const setDrawingActionCreator = value => ({type: setDrawing, value: value})
+export const setCurrentShapeActionCreator = value => ({type: setCurrentShape, value: value})
+export const setQueueActionCreator = value => ({type: setQueue, value: value})
+
 export default editorReducer
