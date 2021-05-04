@@ -1,33 +1,33 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import s from './Editor.module.css'
 // import ButtonShape from "./ButtonShape/ButtonShape";
 import {Layer, Line, Rect, Stage} from "react-konva";
 
 
 function Editor(props) {
-    const formatQueue = (queue) => {
-        const a = queue.map(el => {
+    const formatQueue = queue => {
+        return queue.map(el => {
             switch (el.type) {
                 case "Line":
-                    return (<Line x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black" points={[0, 0, el.width, el.height]}/>)
+                    return (<Line x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black"
+                                  points={[0, 0, el.width, el.height]}/>)
                 case "Rect":
-                    return (<Rect x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black" width={el.width} height={el.height} />)
+                    return (<Rect x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black" width={el.width}
+                                  height={el.height}/>)
                 default:
-                    return false
+                    break
             }
         })
-        return a
     }
     const canvas = React.createRef()
     const layer = React.createRef()
     const shapeRef = useRef(null)
-    const [drawing, setDrawing] = useState(props.drawing)
+    let drawingNew = props.drawing
     const queue = formatQueue(props.queue)
     const [shape, setShape] = useState(null)
 
     const mouseDownHandler = e => {
-        setDrawing(true)
-        props.setDrawing(!drawing)
+        props.setDrawing(true)
         switch (props.currentShape) {
             case "Line":
                 setShape(<Line
@@ -38,7 +38,7 @@ function Editor(props) {
                     stroke="black"
                     ref={shapeRef}
                 />)
-                return false
+                break
             case "Rect":
                 setShape(<Rect
                     x={canvas.current.getPointerPosition().x}
@@ -48,15 +48,15 @@ function Editor(props) {
                     stroke="black"
                     ref={shapeRef}
                 />)
-                return false
+                break
             default:
-                return false
+                break
         }
 
     }
 
     const mouseMoveHandler = e => {
-        if (!drawing) return false
+        if (!drawingNew) return false
         const newWidth = canvas.current.getPointerPosition().x - shape.props.x
         const newHeight = canvas.current.getPointerPosition().y - shape.props.y
         switch (props.currentShape) {
@@ -69,7 +69,7 @@ function Editor(props) {
                     stroke="black"
                     ref={shapeRef}
                 />)
-                return false
+                break
             case "Rect":
                 setShape(<Rect
                     x={shape.props.x}
@@ -79,16 +79,15 @@ function Editor(props) {
                     stroke="black"
                     ref={shapeRef}
                 />)
-                return false
+                break
             default:
-                return false
+                break
         }
 
     }
 
     const mouseUpHandler = e => {
-        setDrawing(false)
-        props.setDrawing(!drawing)
+        props.setDrawing(false)
         if (shape) {
             switch (shape.type) {
                 case "Rect":
@@ -100,7 +99,7 @@ function Editor(props) {
                         width: shape.props.width,
                         height: shape.props.height
                     })
-                    return false
+                    break
                 case "Line":
                     props.setQueue({
                         id: queue.length,
@@ -110,16 +109,15 @@ function Editor(props) {
                         width: shape.props.points[2],
                         height: shape.props.points[3]
                     })
+                    break
             }
-
         }
         setShape(null)
     }
 
     const mouseOutHandler = e => {
-        if (drawing) {
-            setDrawing(false)
-            props.setDrawing(!drawing)
+        if (drawingNew) {
+            props.setDrawing(false)
             setShape(null)
         }
     };
@@ -130,6 +128,18 @@ function Editor(props) {
 
     const buttons = props.shapes.map(el => (
         <button onClick={() => props.setCurrentShape(el)} key={props.shapes.indexOf(el)}>{el}</button>))
+
+    useEffect(() => {
+        const onKeyPress = e => {
+            if (e.code === "KeyZ" && e.ctrlKey) {
+                props.delLastFromQueue()
+            }
+        }
+        document.addEventListener("keypress", onKeyPress)
+        return () => {
+            document.removeEventListener("keypress", onKeyPress)
+        }
+    }, [])
 
     return (
         <div>
