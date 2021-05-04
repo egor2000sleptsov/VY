@@ -3,6 +3,7 @@ import {connect} from "react-redux";
 // import mapDispatchToProps from "react-redux/lib/connect/mapDispatchToProps";
 import Editor from "./Editor";
 import {
+    addLastFromBufferedShapesActionCreator,
     delLastFromQueueActionCreator,
     setCurrentShapeActionCreator,
     setDrawingActionCreator,
@@ -23,7 +24,8 @@ let mapDispatchToProps = (dispatch) => {
         setDrawing: value => dispatch(setDrawingActionCreator(value)),
         setQueue: value => dispatch(setQueueActionCreator(value)),
         setCurrentShape: value => dispatch(setCurrentShapeActionCreator(value)),
-        delLastFromQueue: () => dispatch(delLastFromQueueActionCreator())
+        delLastFromQueue: () => dispatch(delLastFromQueueActionCreator()),
+        addLastFromBufferedShapes: () => dispatch(addLastFromBufferedShapesActionCreator()),
     }
 }
 const EditorContainer = connect(mapStateToProps, mapDispatchToProps)(Editor)
