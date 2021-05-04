@@ -129,11 +129,14 @@ function Editor(props) {
     const buttons = props.shapes.map(el => (
         <button onClick={() => props.setCurrentShape(el)} key={props.shapes.indexOf(el)}>{el}</button>))
 
+    //"ctrl+z" and "ctrl+shift+z"
     useEffect(() => {
         const onKeyPress = e => {
-            if (e.code === "KeyZ" && e.ctrlKey) {
+            // console.log(e)
+            if (e.code === "KeyZ" && e.ctrlKey && !e.shiftKey)
                 props.delLastFromQueue()
-            }
+            else if (e.code === "KeyZ" && e.ctrlKey && e.shiftKey)
+                props.addLastFromBufferedShapes()
         }
         document.addEventListener("keypress", onKeyPress)
         return () => {
