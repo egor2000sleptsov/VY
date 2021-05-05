@@ -1,7 +1,9 @@
 import React, {useEffect, useRef, useState} from 'react';
 import s from './Editor.module.css'
 // import ButtonShape from "./ButtonShape/ButtonShape";
-import {Layer, Line, Rect, Stage} from "react-konva";
+import {Layer, Line, Rect, Stage, Text} from "react-konva";
+import Toolbar from "./Toolbar/Toolbar";
+import InfoPanel from "./InfoPanel/InfoPanel";
 
 
 function Editor(props) {
@@ -120,12 +122,13 @@ function Editor(props) {
             props.setDrawing(false)
             setShape(null)
         }
-    };
+    }
 
     const debug = e => {
         debugger
     }
 
+    //buttons
     const buttons = props.shapes.map(el => (
         <button onClick={() => props.setCurrentShape(el)} key={props.shapes.indexOf(el)}>{el}</button>))
 
@@ -144,26 +147,39 @@ function Editor(props) {
         }
     }, [])
 
-    return (
-        <div>
-            <button onClick={debug}>debugger</button>
-            {buttons}
+    const save = () => {
+        const f = canvas.current.toDataURL({pixelRatio: 2})
+        console.log(f)
+    }
 
-            <div onMouseOut={mouseOutHandler}>
-                <Stage
-                    className={s.canvas}
-                    ref={canvas}
-                    width={1000}
-                    height={1000}
-                    onMouseDown={mouseDownHandler}
-                    onMouseUp={mouseUpHandler}
-                    onMousemove={mouseMoveHandler}
-                >
-                    <Layer ref={layer}>
-                        {queue}
-                        {shape}
-                    </Layer>
-                </Stage>
+    return (
+        <div className={s.editor}>
+            <Toolbar/>
+
+            <div>
+                <InfoPanel/>
+                <div>
+                    <button onClick={debug}>debugger</button>
+                    {buttons}
+                </div>
+                <div onMouseOut={mouseOutHandler}>
+                    <Stage
+                        className={s.canvas}
+                        ref={canvas}
+                        width={1000}
+                        height={1000}
+                        onMouseDown={mouseDownHandler}
+                        onMouseUp={mouseUpHandler}
+                        onMousemove={mouseMoveHandler}
+                    >
+                        <Layer ref={layer}>
+                            {queue}
+                            {shape}
+                            <Text x={900} y={900} text={props.workCost} draggable={true}/>
+                        </Layer>
+                    </Stage>
+                </div>
+                <button onClick={save}>save</button>
             </div>
         </div>
     );

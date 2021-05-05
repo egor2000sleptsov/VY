@@ -1,19 +1,44 @@
 import {NavLink} from "react-router-dom";
 import React from 'react';
+import AppBar from '@material-ui/core/AppBar'
+import {Button, Toolbar, Typography} from "@material-ui/core";
+import s from './Navbar.module.css'
+import {makeStyles} from "@material-ui/styles";
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+    },
+    // menuButton: {
+    //     marginRight: theme.spacing(2),
+    // },
+    title: {
+        flexGrow: 1,
+    },
+}));
 
 function Navbar(props) {
+    const classes = useStyles();
     return (
-        <nav>
-            <div className="nav-wrapper">
-                <NavLink to='/' className="brand-logo">Logo</NavLink>
-                <ul id="nav-mobile" className="right hide-on-med-and-down">
-                    <li><NavLink to="/">Главная</NavLink></li>
-                    <li><NavLink to="/editor">Редактор</NavLink></li>
-                    <li><NavLink to="/calculator">О нас</NavLink></li>
-                </ul>
-            </div>
-        </nav>
+        <div className={classes.root}>
+            <AppBar>
+                <Toolbar>
+                    <div className={s.navWrapper}>
+                        <Typography variant="h3" className={classes.title}>
+                            News
+                        </Typography>
+                        <ul id="nav-mobile" className="right hide-on-med-and-down">
+                            <Button color='inherit'><NavLink to="/">Главная</NavLink></Button>
+                            <Button color='inherit'><NavLink to="/editor">Редактор</NavLink></Button>
+                            <Button color='inherit'><NavLink to="/calculator">О нас</NavLink></Button>
+                        </ul>
+                    </div>
+                </Toolbar>
+            </AppBar>
+        </div>
     );
 }
+
+
 
 export default Navbar;

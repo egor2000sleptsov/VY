@@ -6,7 +6,7 @@ import Navbar from "./components/Navbar";
 function App() {
     const routes = useRoutes(true)
     return (
-        <div className="container">
+        <div>
             <Router>
                 <Navbar/>
                 {routes}
