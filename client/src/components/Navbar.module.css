@@ -1,0 +1,12 @@
+.app-bar-wrapper {
+}
+
+.nav-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.typography {
+    flex-grow: 1;
+}

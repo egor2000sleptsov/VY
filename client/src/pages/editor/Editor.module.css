@@ -1,3 +1,18 @@
 .canvas {
     border: 1px solid black;
+    width: 1000px;
+    height: 1000px;
+}
+
+.panel {
+
+}
+
+.editor {
+    position: absolute;
+    top: 146px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    box-sizing: border-box;
 }

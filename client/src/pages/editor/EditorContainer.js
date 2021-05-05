@@ -15,7 +15,9 @@ let mapStateToProps = (store) => {
         queue: [...store.editor.queue],
         currentShape: store.editor.currentShape,
         shapes: [...store.editor.shapes],
-        drawing: store.editor.drawing
+        drawing: store.editor.drawing,
+        materialCost: store.editor.materialCost,
+        workCost: store.editor.workCost
     }
 }
 

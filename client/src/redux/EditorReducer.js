@@ -13,7 +13,9 @@ let initialState = {
     shapes: [
         "Line",
         "Rect"
-    ]
+    ],
+    materialCost: 2999,
+    workCost: 90909
 }
 
 const editorReducer = (state = initialState, action) => {
