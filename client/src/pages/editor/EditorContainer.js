@@ -6,7 +6,7 @@ import {
     addLastFromBufferedShapesActionCreator,
     delLastFromQueueActionCreator,
     setCurrentShapeActionCreator,
-    setDrawingActionCreator,
+    setDrawingActionCreator, setMaterialCostActionCreator,
     setQueueActionCreator
 } from "../../redux/EditorReducer";
 
@@ -28,6 +28,7 @@ let mapDispatchToProps = (dispatch) => {
         setCurrentShape: value => dispatch(setCurrentShapeActionCreator(value)),
         delLastFromQueue: () => dispatch(delLastFromQueueActionCreator()),
         addLastFromBufferedShapes: () => dispatch(addLastFromBufferedShapesActionCreator()),
+        setMaterialCost: value => dispatch(setMaterialCostActionCreator(value)),
     }
 }
 const EditorContainer = connect(mapStateToProps, mapDispatchToProps)(Editor)

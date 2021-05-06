@@ -3,6 +3,7 @@ const setCurrentShape = 'setCurrentShape'
 const setQueue = 'setQueue'
 const delLastFromQueue = 'delLastFromQueue'
 const addLastFromBufferedShapes = 'addLastFromBufferedShapes'
+const setMaterialCost = 'setMaterialCost'
 
 
 let initialState = {
@@ -12,9 +13,12 @@ let initialState = {
     queue: [],
     shapes: [
         "Line",
-        "Rect"
+        "Rect",
+        'PowerSocket',
+        "Switcher",
+        "Lamp"
     ],
-    materialCost: 2999,
+    materialCost: 0,
     workCost: 90909
 }
 
@@ -45,6 +49,9 @@ const editorReducer = (state = initialState, action) => {
             if (stateCopy.bufferedShapes.length > 0)
                 stateCopy.queue = [...stateCopy.queue, stateCopy.bufferedShapes.pop()]
             return stateCopy
+        case setMaterialCost:
+            stateCopy.materialCost = stateCopy.materialCost+action.value
+            return stateCopy
         default:
             return state
     }
@@ -55,6 +62,7 @@ export const setCurrentShapeActionCreator = value => ({type: setCurrentShape, va
 export const setQueueActionCreator = value => ({type: setQueue, value: value})
 export const delLastFromQueueActionCreator = () => ({type: delLastFromQueue})
 export const addLastFromBufferedShapesActionCreator = () => ({type: addLastFromBufferedShapes})
+export const setMaterialCostActionCreator = value => ({type: setMaterialCost, value: value})
 
 
 export default editorReducer

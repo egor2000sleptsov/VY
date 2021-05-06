@@ -1,12 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
 import s from './Editor.module.css'
 // import ButtonShape from "./ButtonShape/ButtonShape";
-import {Layer, Line, Rect, Stage, Text} from "react-konva";
+import {Image, Layer, Line, Rect, Stage} from "react-konva";
 import Toolbar from "./Toolbar/Toolbar";
 import InfoPanel from "./InfoPanel/InfoPanel";
+import useImage from "use-image";
+import img from '../../images/powerSocket.png'
 
 
 function Editor(props) {
+    const [image, status] = useImage("https://psv4.userapi.com/c534536/u189412517/docs/d17/088e4dc9616b/powerSocket.png?extra=XeV1PSWUYxveJNLh15Yjg6Be_yg4NBU5tmsFspiNSbFBAzEQCNP6f5WaYUryFwpGYugaOtEzWa4s0rXgwn3IjSuSzbpjNPeODs9trCW9HZ42yhD_UcUnm0gyIa2P0aKt6VD7uDPIQLP0ekjbcigV")
     const formatQueue = queue => {
         return queue.map(el => {
             switch (el.type) {
@@ -16,6 +19,9 @@ function Editor(props) {
                 case "Rect":
                     return (<Rect x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black" width={el.width}
                                   height={el.height}/>)
+                case "PowerSocket":
+                    return (<Image image={image} x={el.x} y={el.y} key={el.id} ref={{current: null}} width={el.width}
+                                   height={el.height}/>)
                 default:
                     break
             }
@@ -26,10 +32,12 @@ function Editor(props) {
     const shapeRef = useRef(null)
     let drawingNew = props.drawing
     const queue = formatQueue(props.queue)
-    const [shape, setShape] = useState(null)
 
+    const [shape, setShape] = useState(null)
     const mouseDownHandler = e => {
+        console.log(img)
         props.setDrawing(true)
+
         switch (props.currentShape) {
             case "Line":
                 setShape(<Line
@@ -51,16 +59,26 @@ function Editor(props) {
                     ref={shapeRef}
                 />)
                 break
+            case "PowerSocket":
+                setShape(<Image
+                    image={image}
+                    x={canvas.current.getPointerPosition().x}
+                    y={canvas.current.getPointerPosition().y}
+                    width={0}
+                    height={0}
+                    ref={shapeRef}
+                />)
+                break
             default:
                 break
         }
 
     }
-
     const mouseMoveHandler = e => {
         if (!drawingNew) return false
         const newWidth = canvas.current.getPointerPosition().x - shape.props.x
         const newHeight = canvas.current.getPointerPosition().y - shape.props.y
+
         switch (props.currentShape) {
             case "Line":
                 setShape(<Line
@@ -82,12 +100,22 @@ function Editor(props) {
                     ref={shapeRef}
                 />)
                 break
+            case "PowerSocket":
+                setShape(<Image
+                    image={image}
+                    x={shape.props.x}
+                    y={shape.props.y}
+                    width={newWidth}
+                    height={newHeight}
+                    ref={shapeRef}
+                />)
+                console.log(shape)
+                break
             default:
                 break
         }
 
     }
-
     const mouseUpHandler = e => {
         props.setDrawing(false)
         if (shape) {
@@ -112,25 +140,34 @@ function Editor(props) {
                         height: shape.props.points[3]
                     })
                     break
+                case "Image":
+                    props.setQueue({
+                        id: queue.length,
+                        type: "PowerSocket",
+                        x: shape.props.x,
+                        y: shape.props.y,
+                        width: shape.props.width,
+                        height: shape.props.height
+                    })
+                    props.setMaterialCost(200)
+                    break
             }
         }
         setShape(null)
-    }
 
+    }
     const mouseOutHandler = e => {
         if (drawingNew) {
             props.setDrawing(false)
             setShape(null)
         }
-    }
 
+    }
     const debug = e => {
         debugger
-    }
 
-    //buttons
-    const buttons = props.shapes.map(el => (
-        <button onClick={() => props.setCurrentShape(el)} key={props.shapes.indexOf(el)}>{el}</button>))
+
+    }
 
     //"ctrl+z" and "ctrl+shift+z"
     useEffect(() => {
@@ -154,14 +191,10 @@ function Editor(props) {
 
     return (
         <div className={s.editor}>
-            <Toolbar/>
+            <Toolbar setCurrentShape={props.setCurrentShape} shapes={props.shapes} debug={debug} save={save}/>
 
             <div>
-                <InfoPanel/>
-                <div>
-                    <button onClick={debug}>debugger</button>
-                    {buttons}
-                </div>
+                <InfoPanel materialCost={props.materialCost} workCost={props.workCost}/>
                 <div onMouseOut={mouseOutHandler}>
                     <Stage
                         className={s.canvas}
@@ -175,11 +208,9 @@ function Editor(props) {
                         <Layer ref={layer}>
                             {queue}
                             {shape}
-                            <Text x={900} y={900} text={props.workCost} draggable={true}/>
                         </Layer>
                     </Stage>
                 </div>
-                <button onClick={save}>save</button>
             </div>
         </div>
     );
