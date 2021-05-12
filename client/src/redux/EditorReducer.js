@@ -4,6 +4,8 @@ const setQueue = 'setQueue'
 const delLastFromQueue = 'delLastFromQueue'
 const addLastFromBufferedShapes = 'addLastFromBufferedShapes'
 const setMaterialCost = 'setMaterialCost'
+const clearQueue = 'ClearQueue'
+
 
 
 let initialState = {
@@ -19,7 +21,7 @@ let initialState = {
         "Lamp"
     ],
     materialCost: 0,
-    workCost: 90909
+    workCost: 7300
 }
 
 const editorReducer = (state = initialState, action) => {
@@ -42,15 +44,27 @@ const editorReducer = (state = initialState, action) => {
             stateCopy.bufferedShapes = []
             return stateCopy
         case delLastFromQueue:
-            if (stateCopy.queue.length > 0)
-                stateCopy.bufferedShapes = [...stateCopy.bufferedShapes, stateCopy.queue.pop()]
+            if (stateCopy.queue.length > 0){
+                if (stateCopy.queue[stateCopy.queue.length - 1].type === "PowerSocket")
+                    stateCopy.materialCost = stateCopy.materialCost - 200
+                else if (stateCopy.queue[stateCopy.queue.length - 1].type === "Switcher")
+                    stateCopy.materialCost = stateCopy.materialCost - 150
+                else if (stateCopy.queue[stateCopy.queue.length - 1].type === "Lamp")
+                    stateCopy.materialCost = stateCopy.materialCost - 150
+            }
+            stateCopy.bufferedShapes = [...stateCopy.bufferedShapes, stateCopy.queue.pop()]
             return stateCopy
         case addLastFromBufferedShapes:
             if (stateCopy.bufferedShapes.length > 0)
                 stateCopy.queue = [...stateCopy.queue, stateCopy.bufferedShapes.pop()]
             return stateCopy
         case setMaterialCost:
-            stateCopy.materialCost = stateCopy.materialCost+action.value
+            stateCopy.materialCost = stateCopy.materialCost + action.value
+            return stateCopy
+        case clearQueue:
+            stateCopy.queue = []
+            stateCopy.materialCost = 0
+            stateCopy.workCost = 0
             return stateCopy
         default:
             return state
@@ -63,6 +77,8 @@ export const setQueueActionCreator = value => ({type: setQueue, value: value})
 export const delLastFromQueueActionCreator = () => ({type: delLastFromQueue})
 export const addLastFromBufferedShapesActionCreator = () => ({type: addLastFromBufferedShapes})
 export const setMaterialCostActionCreator = value => ({type: setMaterialCost, value: value})
+export const clearQueueActionCreator = () => ({type: clearQueue})
+
 
 
 export default editorReducer
