@@ -4,34 +4,35 @@ import {Image, Layer, Line, Rect, Stage} from "react-konva";
 import Toolbar from "./Toolbar/Toolbar";
 import InfoPanel from "./InfoPanel/InfoPanel";
 import useImage from "use-image";
+import {jsPDF} from "jspdf"
 
 
 function Editor(props) {
-    const [PowerSocketImg, PowerSocketstatus] = useImage("https://psv4.userapi.com/c534536/u189412517/docs/d17/e6c24d0c3678/powerSocket.png?extra=y8dbPxDBzbHrB6c1dY9tVzF0gVDWXzJdCAPlMd0FS6bhz_jdx1SLKDT4UqJkWpkbELscQw4I9zx_S_vsfeOIjVWb9h-YLfYfoz-zTuyc_NNgxL7YsdpDOzDmA6zVpkLnTUAlCzzBGykCSLC3WKbCDMs", "Anonymous")
-    const [SwitcherImg, SwitcherStatus] = useImage("https://sun9-21.userapi.com/impg/thvklK8x5Qmf5fsQPGK8iu9rC1Yrqs5UWSgC8A/jhIqlRHkNaQ.jpg?size=486x413&quality=96&sign=3cb26650d34a8f956a0cd8a7aa5b6ccc&type=album", 'Anonymous')
-    const [LampImg, LampStatus] = useImage("https://sun9-42.userapi.com/impg/KUCVGso6Oyr0E2NNuQWwduZuBcUm6lJ_uz7ZQw/yrZ8H5t2lQc.jpg?size=413x443&quality=96&sign=9af690b728385b82f516f16377a8b618&type=album", "Anonymous")
+    const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/00d6f2b582bb/powerSocket.png?extra=lEKjEv3fDS6VHCBtDD9t1M9grxSRXRtQXNW3_KghL2dg61qIcfScRy2gOB_OjoLmVvboMvqoTfZEMdCQS_8jJinGGJBJL6yxkIPB2EWxWrjT7uhobwb98RvXXQt7Xha1CiSEP8dbL-Do2WktKYs", "Anonymous")
+    const [SwitcherImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d50/11dae852001a/switcher.png?extra=pyKQ_FdAe7GYI5yQ2QMIuYqQo-twTb85cyK4FykRffjcCvB8BiLWriaz8l2RbVwt-TarpwSzFRGYLgFH7WMcD3iDf5j3gLoDPtpDGxhd0nxcsvSqSiQdGoyJIdFwoWbGK4hQD1JFWGHrNBgdqvQ", 'Anonymous')
+    const [LampImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d12/3da79db38565/lamp.png?extra=St3ogL3iy0WPrv8DLMIOi9tZa3n_py5N9UVyM25kIQ2A1ZDeArq4HX4qcUv20FTNO7I3Ms88UFnPMdueVemKYMbgtrltPfPCG5P96MZbT6xMVCWlg7IuVMgHEsAuLgYrz8k8SFwWqZANyMHVPNU", "Anonymous")
     const formatQueue = queue => {
         return queue.map(el => {
             switch (el.type) {
                 case "Line":
                     return (<Line x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black"
-                                  points={[0, 0, el.width, el.height]}/>)
+                                  points={[0, 0, el.width, el.height]} draggable={true} onDragStart={dragStart}/>)
                 case "Rect":
                     return (<Rect x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black" width={el.width}
                                   height={el.height}/>)
                 case "PowerSocket":
                     return (<Image image={PowerSocketImg} x={el.x} y={el.y} key={el.id} ref={{current: null}}
                                    width={el.width}
-                                   height={el.height}/>)
+                                   height={el.height} draggable={true} onDragStart={dragStart}/>)
                 case "Switcher":
                     return (
                         <Image image={SwitcherImg} x={el.x} y={el.y} key={el.id} ref={{current: null}} width={el.width}
-                               height={el.height}/>)
+                               height={el.height} draggable={true} onDragStart={dragStart}/>)
                 case "Lamp":
                     return (<Image image={LampImg} x={el.x} y={el.y} key={el.id} ref={{current: null}} width={el.width}
-                                   height={el.height}/>)
+                                   height={el.height} draggable={true} onDragStart={dragStart}/>)
                 default:
-                    break
+                    return null
             }
         })
     }
@@ -215,6 +216,8 @@ function Editor(props) {
                         height: shape.props.height
                     })
                     break
+                default:
+                    break
             }
         }
         props.setCost()
@@ -232,6 +235,9 @@ function Editor(props) {
         debugger
     }
 
+    function dragStart(e) {
+        props.delLastFromQueue()
+    }
     //"ctrl+z" and "ctrl+shift+z"
     useEffect(() => {
         const onKeyPress = e => {
@@ -248,8 +254,16 @@ function Editor(props) {
     }, [])
 
     const save = () => {
-        const f = canvas.current.toDataURL({pixelRatio: 2})
-        console.log(f)
+        let pdf = new jsPDF('l','px',[canvas.current.width(),canvas.current.height()])
+        pdf.setTextColor('#000000')
+        pdf.addImage(
+            canvas.current.toDataURL({pixelRatio:2}),
+            0,
+            0,
+            canvas.current.width(),
+            canvas.current.height(),
+        )
+        pdf.save("canvas.pdf")
     }
     const clearQueue = () =>
         props.clearQueue()
@@ -267,7 +281,8 @@ function Editor(props) {
                         ref={canvas}
                         width={1000}
                         height={1000}
-                        onMouseDown={mouseDownHandler}
+                        // onMouseDown={mouseDownHandler}
+                        onContentMousedown={mouseDownHandler}
                         onMouseUp={mouseUpHandler}
                         onMousemove={mouseMoveHandler}
                     >
