@@ -5,31 +5,59 @@ const delLastFromQueue = 'delLastFromQueue'
 const addLastFromBufferedShapes = 'addLastFromBufferedShapes'
 const setMaterialCost = 'setMaterialCost'
 const clearQueue = 'ClearQueue'
-
+const setCost = 'setCost'
 
 
 let initialState = {
     bufferedShapes: [],
-    currentShape: "Line",
+    currentShape: {
+        type: "Line",
+        workCost: 0,
+        materialCost: 0
+    },
     drawing: false,
     queue: [],
     shapes: [
-        "Line",
-        "Rect",
-        'PowerSocket',
-        "Switcher",
-        "Lamp"
+        {
+            name: "Линия",
+            type: "Line",
+            workCost: 0,
+            materialCost: 0
+        },
+        {
+            name: "Прямоугольник",
+            type: "Rect",
+            workCost: 0,
+            materialCost: 0
+        },
+        {
+            name: "Розетка",
+            type: "PowerSocket",
+            workCost: 500,
+            materialCost: 200
+        },
+        {
+            name: "Переключатель",
+            type: "Switcher",
+            workCost: 700,
+            materialCost: 250
+        },
+        {
+            name: "Светильник",
+            type: "Lamp",
+            workCost: 750,
+            materialCost: 150
+        }
     ],
     materialCost: 0,
-    workCost: 7300
+    workCost: 0
 }
 
 const editorReducer = (state = initialState, action) => {
     let stateCopy = {
         ...state,
-        coordinate: {...state.coordinate},
-        currentCoordinate: {...state.currentCoordinate},
-        queue: [...state.queue]
+        queue: [...state.queue],
+        shapes: [...state.shapes]
     }
 
     switch (action.type) {
@@ -44,19 +72,21 @@ const editorReducer = (state = initialState, action) => {
             stateCopy.bufferedShapes = []
             return stateCopy
         case delLastFromQueue:
-            if (stateCopy.queue.length > 0){
-                if (stateCopy.queue[stateCopy.queue.length - 1].type === "PowerSocket")
-                    stateCopy.materialCost = stateCopy.materialCost - 200
-                else if (stateCopy.queue[stateCopy.queue.length - 1].type === "Switcher")
-                    stateCopy.materialCost = stateCopy.materialCost - 150
-                else if (stateCopy.queue[stateCopy.queue.length - 1].type === "Lamp")
-                    stateCopy.materialCost = stateCopy.materialCost - 150
+            if (stateCopy.queue.length > 0) {
+                const tmp = stateCopy.queue.pop()
+                stateCopy.materialCost = stateCopy.materialCost - stateCopy.shapes.find(el => el.type === tmp.type).materialCost
+                stateCopy.workCost = stateCopy.workCost - stateCopy.shapes.find(el => el.type === tmp.type).workCost
+                stateCopy.bufferedShapes = [...stateCopy.bufferedShapes, tmp]
+
             }
-            stateCopy.bufferedShapes = [...stateCopy.bufferedShapes, stateCopy.queue.pop()]
             return stateCopy
         case addLastFromBufferedShapes:
-            if (stateCopy.bufferedShapes.length > 0)
-                stateCopy.queue = [...stateCopy.queue, stateCopy.bufferedShapes.pop()]
+            if (stateCopy.bufferedShapes.length > 0) {
+                const tmp = stateCopy.bufferedShapes.pop()
+                stateCopy.materialCost = stateCopy.materialCost + stateCopy.shapes.find(el => el.type === tmp.type).materialCost
+                stateCopy.workCost = stateCopy.workCost + stateCopy.shapes.find(el => el.type === tmp.type).workCost
+                stateCopy.queue = [...stateCopy.queue, tmp]
+            }
             return stateCopy
         case setMaterialCost:
             stateCopy.materialCost = stateCopy.materialCost + action.value
@@ -65,6 +95,10 @@ const editorReducer = (state = initialState, action) => {
             stateCopy.queue = []
             stateCopy.materialCost = 0
             stateCopy.workCost = 0
+            return stateCopy
+        case setCost:
+            stateCopy.workCost = stateCopy.workCost + stateCopy.currentShape.workCost
+            stateCopy.materialCost = stateCopy.materialCost + stateCopy.currentShape.materialCost
             return stateCopy
         default:
             return state
@@ -78,7 +112,7 @@ export const delLastFromQueueActionCreator = () => ({type: delLastFromQueue})
 export const addLastFromBufferedShapesActionCreator = () => ({type: addLastFromBufferedShapes})
 export const setMaterialCostActionCreator = value => ({type: setMaterialCost, value: value})
 export const clearQueueActionCreator = () => ({type: clearQueue})
-
+export const setCostActionCreator = () => ({type: setCost})
 
 
 export default editorReducer
