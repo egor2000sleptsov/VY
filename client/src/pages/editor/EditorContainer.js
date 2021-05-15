@@ -3,8 +3,8 @@ import {connect} from "react-redux";
 // import mapDispatchToProps from "react-redux/lib/connect/mapDispatchToProps";
 import Editor from "./Editor";
 import {
-    addLastFromBufferedShapesActionCreator,
-    delLastFromQueueActionCreator,
+    addLastFromBufferedShapesActionCreator, clearQueueActionCreator,
+    delLastFromQueueActionCreator, setCostActionCreator,
     setCurrentShapeActionCreator,
     setDrawingActionCreator, setMaterialCostActionCreator,
     setQueueActionCreator
@@ -14,10 +14,10 @@ let mapStateToProps = (store) => {
     return {
         queue: [...store.editor.queue],
         currentShape: store.editor.currentShape,
-        shapes: [...store.editor.shapes],
         drawing: store.editor.drawing,
         materialCost: store.editor.materialCost,
-        workCost: store.editor.workCost
+        workCost: store.editor.workCost,
+        shapes: [...store.editor.shapes]
     }
 }
 
@@ -29,6 +29,8 @@ let mapDispatchToProps = (dispatch) => {
         delLastFromQueue: () => dispatch(delLastFromQueueActionCreator()),
         addLastFromBufferedShapes: () => dispatch(addLastFromBufferedShapesActionCreator()),
         setMaterialCost: value => dispatch(setMaterialCostActionCreator(value)),
+        clearQueue: () => dispatch(clearQueueActionCreator()),
+        setCost: () => dispatch(setCostActionCreator()),
     }
 }
 const EditorContainer = connect(mapStateToProps, mapDispatchToProps)(Editor)
