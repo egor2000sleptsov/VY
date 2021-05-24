@@ -1,47 +1,84 @@
 import React, {useEffect, useRef, useState} from 'react';
 import s from './Editor.module.css'
-import {Image, Layer, Line, Rect, Stage} from "react-konva";
+import {Image, Layer, Line, Rect, Stage, Text} from "react-konva";
 import Toolbar from "./Toolbar/Toolbar";
 import InfoPanel from "./InfoPanel/InfoPanel";
 import useImage from "use-image";
 import {jsPDF} from "jspdf"
-
+import {abs, round, sign, sin, sqrt} from 'mathjs'
 
 function Editor(props) {
-    const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/00d6f2b582bb/powerSocket.png?extra=lEKjEv3fDS6VHCBtDD9t1M9grxSRXRtQXNW3_KghL2dg61qIcfScRy2gOB_OjoLmVvboMvqoTfZEMdCQS_8jJinGGJBJL6yxkIPB2EWxWrjT7uhobwb98RvXXQt7Xha1CiSEP8dbL-Do2WktKYs", "Anonymous")
-    const [SwitcherImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d50/11dae852001a/switcher.png?extra=pyKQ_FdAe7GYI5yQ2QMIuYqQo-twTb85cyK4FykRffjcCvB8BiLWriaz8l2RbVwt-TarpwSzFRGYLgFH7WMcD3iDf5j3gLoDPtpDGxhd0nxcsvSqSiQdGoyJIdFwoWbGK4hQD1JFWGHrNBgdqvQ", 'Anonymous')
-    const [LampImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d12/3da79db38565/lamp.png?extra=St3ogL3iy0WPrv8DLMIOi9tZa3n_py5N9UVyM25kIQ2A1ZDeArq4HX4qcUv20FTNO7I3Ms88UFnPMdueVemKYMbgtrltPfPCG5P96MZbT6xMVCWlg7IuVMgHEsAuLgYrz8k8SFwWqZANyMHVPNU", "Anonymous")
+    const PowerSocketImg = require("../../images/powerSocket.png")
+    // const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/00d6f2b582bb/powerSocket.png?extra=lEKjEv3fDS6VHCBtDD9t1M9grxSRXRtQXNW3_KghL2dg61qIcfScRy2gOB_OjoLmVvboMvqoTfZEMdCQS_8jJinGGJBJL6yxkIPB2EWxWrjT7uhobwb98RvXXQt7Xha1CiSEP8dbL-Do2WktKYs", "Anonymous")
+    const [SwitcherImg] = useImage("../../images/switcher.png", 'Anonymous')
+    const [LampImg] = useImage("https://sun9-42.userapi.com/impg/KUCVGso6Oyr0E2NNuQWwduZuBcUm6lJ_uz7ZQw/yrZ8H5t2lQc.jpg?size=413x443&quality=96&sign=9af690b728385b82f516f16377a8b618&type=album", "Anonymous")
+
     const formatQueue = queue => {
-        return queue.map(el => {
+        let tmp = []
+        queue.forEach((el) => {
             switch (el.type) {
                 case "Line":
-                    return (<Line x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black"
-                                  points={[0, 0, el.width, el.height]} draggable={true} onDragStart={dragStart}/>)
+                    const katet = sqrt(el.height * el.height + el.width * el.width)
+                    tmp.push((<Line x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black"
+                                    points={[0, 0, el.width, el.height]} draggable={true} onDragStart={dragStart}/>))
+                    tmp.push((<Text
+                        text={`${round(katet * 10)}мм`}
+                        x={el.x + el.width / 2 - 17}
+                        y={el.y + el.height / 2 - 17}
+                        fontSize={17}
+                        rotation={sin((el.height) / katet) * 90 * sign(el.width)}
+                    />))
+
+                    break
                 case "Rect":
-                    return (<Rect x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black" width={el.width}
-                                  height={el.height}/>)
+                    tmp.push((<Rect x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black" width={el.width}
+                                    height={el.height} /*draggable={true} onDragStart={dragStart}*//>))
+                    tmp.push((<Text
+                        text={`${abs(el.width) * 10}мм`}
+                        x={el.x + el.width / 2 - 17}
+                        y={el.height > 0 ? el.y - 17 : el.y + el.height - 17}
+                        fontSize={17}
+                        align='left'
+                    />))
+                    tmp.push((<Text
+                        text={`${abs(el.height) * 10}мм`}
+                        x={el.width > 0 ? el.x - 17 : el.x + el.width - 17}
+                        y={el.y + el.height / 2 + 17}
+                        fontSize={17}
+                        rotation={270}
+                        align='left'
+                    />))
+                    break
                 case "PowerSocket":
-                    return (<Image image={PowerSocketImg} x={el.x} y={el.y} key={el.id} ref={{current: null}}
-                                   width={el.width}
-                                   height={el.height} draggable={true} onDragStart={dragStart}/>)
+                    tmp.push((<Image image={PowerSocketImg} x={el.x} y={el.y} key={el.id} ref={{current: null}}
+                                     width={el.width}
+                                     height={el.height} draggable={true} onDragStart={dragStart}/>))
+                    break
                 case "Switcher":
-                    return (
+                    tmp.push((
                         <Image image={SwitcherImg} x={el.x} y={el.y} key={el.id} ref={{current: null}} width={el.width}
-                               height={el.height} draggable={true} onDragStart={dragStart}/>)
+                               height={el.height} draggable={true} onDragStart={dragStart}/>))
+                    break
                 case "Lamp":
-                    return (<Image image={LampImg} x={el.x} y={el.y} key={el.id} ref={{current: null}} width={el.width}
-                                   height={el.height} draggable={true} onDragStart={dragStart}/>)
+                    tmp.push((
+                        <Image image={LampImg} x={el.x} y={el.y} key={el.id} ref={{current: null}} width={el.width}
+                               height={el.height} draggable={true} onDragStart={dragStart}/>))
+                    break
                 default:
-                    return null
+                    break
             }
         })
+        return tmp;
     }
+
     const canvas = React.createRef()
     const layer = React.createRef()
     const shapeRef = useRef(null)
     let drawingNew = props.drawing
     const queue = formatQueue(props.queue)
     const [shape, setShape] = useState(null)
+    const [extraShape, setExtraShape] = useState(null)
+    const [extraShape1, setExtraShape1] = useState(null)
     const mouseDownHandler = e => {
         props.setDrawing(true)
 
@@ -108,6 +145,7 @@ function Editor(props) {
 
         switch (props.currentShape.type) {
             case "Line":
+                const katet = sqrt(newHeight * newHeight + newWidth * newWidth)
                 setShape(<Line
                     x={shape.props.x}
                     y={shape.props.y}
@@ -115,6 +153,13 @@ function Editor(props) {
                     points={[0, 0, newWidth, newHeight]}
                     stroke="black"
                     ref={shapeRef}
+                />)
+                setExtraShape(<Text
+                    text={`${round(katet * 10)}мм`}
+                    x={shape.props.x + newWidth / 2 - 17}
+                    y={shape.props.y + newHeight / 2 - 17}
+                    fontSize={17}
+                    rotation={sin((newHeight) / katet) * 90 * sign(newWidth)}
                 />)
                 break
             case "Rect":
@@ -125,6 +170,19 @@ function Editor(props) {
                     height={newHeight}
                     stroke="black"
                     ref={shapeRef}
+                />)
+                setExtraShape(<Text
+                    text={`${abs(newWidth)*10}мм`}
+                    x={shape.props.x + newWidth/2 - 17}
+                    y={newHeight>0 ? shape.props.y - 17: shape.props.y + newHeight - 17 }
+                    fontSize={17}
+                />)
+                setExtraShape1(<Text
+                    text={`${abs(newHeight)*10}мм`}
+                    x={newWidth>0 ? shape.props.x - 17: shape.props.x + newWidth - 17 }
+                    y={shape.props.y + newHeight/2 + 17}
+                    fontSize={17}
+                    rotation={270}
                 />)
                 break
             case "PowerSocket":
@@ -222,12 +280,16 @@ function Editor(props) {
         }
         props.setCost()
         setShape(null)
+        setExtraShape(null)
+        setExtraShape1(null)
 
     }
     const mouseOutHandler = e => {
         if (drawingNew) {
             props.setDrawing(false)
             setShape(null)
+            setExtraShape(null)
+            setExtraShape1(null)
         }
 
     }
@@ -238,6 +300,7 @@ function Editor(props) {
     function dragStart(e) {
         props.delLastFromQueue()
     }
+
     //"ctrl+z" and "ctrl+shift+z"
     useEffect(() => {
         const onKeyPress = e => {
@@ -254,10 +317,10 @@ function Editor(props) {
     }, [])
 
     const save = () => {
-        let pdf = new jsPDF('l','px',[canvas.current.width(),canvas.current.height()])
+        let pdf = new jsPDF('l', 'px', [canvas.current.width(), canvas.current.height()])
         pdf.setTextColor('#000000')
         pdf.addImage(
-            canvas.current.toDataURL({pixelRatio:2}),
+            canvas.current.toDataURL({pixelRatio: 2}),
             0,
             0,
             canvas.current.width(),
@@ -268,11 +331,11 @@ function Editor(props) {
     const clearQueue = () =>
         props.clearQueue()
 
+
     return (
         <div className={s.editor}>
             <Toolbar setCurrentShape={props.setCurrentShape} debug={debug} save={save} clearQueue={clearQueue}
                      shapes={props.shapes}/>
-
             <div>
                 <InfoPanel materialCost={props.materialCost} workCost={props.workCost}/>
                 <div onMouseOut={mouseOutHandler}>
@@ -287,7 +350,9 @@ function Editor(props) {
                         onMousemove={mouseMoveHandler}
                     >
                         <Layer ref={layer}>
+                            {extraShape1}
                             {queue}
+                            {extraShape}
                             {shape}
                         </Layer>
                     </Stage>
