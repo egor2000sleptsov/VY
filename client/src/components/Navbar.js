@@ -28,9 +28,9 @@ function Navbar(props) {
                             News
                         </Typography>
                         <ul id="nav-mobile" className="right hide-on-med-and-down">
-                            <Button color='inherit'><NavLink to="/">Главная</NavLink></Button>
-                            <Button color='inherit'><NavLink to="/editor">Редактор</NavLink></Button>
-                            <Button color='inherit'><NavLink to="/calculator">О нас</NavLink></Button>
+                            <Button color='white'><NavLink className={s.button} to="/">Главная</NavLink></Button>
+                            <Button color='white'><NavLink className={s.button} to="/editor">Редактор</NavLink></Button>
+                            <Button color='white'><NavLink className={s.button} to="/calculator">О нас</NavLink></Button>
                         </ul>
                     </div>
                 </Toolbar>
@@ -38,7 +38,6 @@ function Navbar(props) {
         </div>
     );
 }
-
 
 
 export default Navbar;
