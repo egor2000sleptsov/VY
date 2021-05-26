@@ -5,7 +5,7 @@ import Toolbar from "./Toolbar/Toolbar";
 import InfoPanel from "./InfoPanel/InfoPanel";
 import useImage from "use-image";
 import {jsPDF} from "jspdf"
-import {abs, round, sign, sin, sqrt} from 'mathjs'
+import {abs, round, sign, sin, sqrt, cos} from 'mathjs'
 
 function Editor(props) {
     const PowerSocketImg = require("../../images/powerSocket.png")
@@ -88,6 +88,8 @@ function Editor(props) {
                     x={canvas.current.getPointerPosition().x}
                     y={canvas.current.getPointerPosition().y}
                     points={[0, 0, 0, 0]}
+                    width={0}
+                    height={0}
                     closed
                     stroke="black"
                     ref={shapeRef}
@@ -149,7 +151,8 @@ function Editor(props) {
                 setShape(<Line
                     x={shape.props.x}
                     y={shape.props.y}
-                    closed
+                    width={abs(newWidth)}
+                    height={abs(newHeight)}
                     points={[0, 0, newWidth, newHeight]}
                     stroke="black"
                     ref={shapeRef}
@@ -222,7 +225,7 @@ function Editor(props) {
     }
     const mouseUpHandler = e => {
         props.setDrawing(false)
-        if (shape) {
+        if (shape.props.width>0 || shape.props.height>0) {
             switch (props.currentShape.type) {
                 case "Rect":
                     props.setQueue({

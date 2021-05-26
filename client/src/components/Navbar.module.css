@@ -10,3 +10,7 @@
 .typography {
     flex-grow: 1;
 }
+
+.button {
+    color: white !important;
+}
