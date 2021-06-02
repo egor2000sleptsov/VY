@@ -93,6 +93,7 @@ const editorReducer = (state = initialState, action) => {
             return stateCopy
         case clearQueue:
             stateCopy.queue = []
+            stateCopy.bufferedShapes = []
             stateCopy.materialCost = 0
             stateCopy.workCost = 0
             return stateCopy

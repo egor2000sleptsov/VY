@@ -1,34 +1,35 @@
-const express = require("express");
-const mongoose = require("mongoose")
-const bodyParser = require("body-parser")
-const config = require("config")
-const port = config.get('port') || 5000
+import db from "./mongoDB/index.js"
+import bodyParser from "body-parser";
+import router from './router/index.js'
+import dotenv from "dotenv"
+import express from "express";
+import listStatus from "./ListStatus/index.js"
+
+dotenv.config()
+
+const port = process.env.PORT || 5000
 const app = express();
 
-app.use(express.json({extended: true}))
-app.use('/api/test', require("./routes/test.routes"))
+db.connect()
 
-async function start() {
-    try {
-        app.use(bodyParser.urlencoded({extended: false}))
-        app.use(bodyParser.json())
+// for parsing the body of request
+app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.json())
 
-        await mongoose.connect(
-            'mongodb://localhost:27017/VY', {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-                useCreateIndex: true,
-            },
-            () => console.log('connectedtoDB')
-        )
-        app.listen(port, () => console.log(`server has bees started on ${port} port`))
-    } catch (e) {
-        console.log(e.message)
-        process.exit(1)
-    }
-}
+//Router
+app.use(router)
 
-start()
+// define global objects
+global.db = db
+global.listStatus = listStatus
+
+
+
+app.listen(port, err => {
+    if (err) return console.log(`Error: ${err}`)
+
+    console.log(`Server started on ${port} port!`)
+})
 
 
 
