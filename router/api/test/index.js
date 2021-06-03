@@ -1,5 +1,6 @@
 const handler = (req, res) => {
     const {query} = req.body
+    console.log(query)
     if (!query)
         res.send(global.listStatus.notSuccess({query: query}))
     else {

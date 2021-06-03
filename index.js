@@ -1,9 +1,9 @@
 import db from "./mongoDB/index.js"
-import bodyParser from "body-parser";
 import router from './router/index.js'
 import dotenv from "dotenv"
 import express from "express";
 import listStatus from "./ListStatus/index.js"
+import multer from "multer"
 
 dotenv.config()
 
@@ -13,8 +13,9 @@ const app = express();
 db.connect()
 
 // for parsing the body of request
-app.use(bodyParser.urlencoded({extended: true}))
-app.use(bodyParser.json())
+app.use(express.urlencoded())
+app.use(express.json())
+app.use(multer().array())
 
 //Router
 app.use(router)
