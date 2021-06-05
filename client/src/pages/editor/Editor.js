@@ -5,9 +5,17 @@ import Toolbar from "./Toolbar/Toolbar";
 import InfoPanel from "./InfoPanel/InfoPanel";
 import useImage from "use-image";
 import {jsPDF} from "jspdf"
-import {abs, round, sign, sin, sqrt, cos} from 'mathjs'
+import {abs, round, sign, sin, sqrt} from 'mathjs'
+import {getAllApp} from "../../axios/getAllApp";
+import {getById} from "../../axios/getById";
+import {createApp} from "../../axios/createApp";
 
 function Editor(props) {
+    const nameRef = React.createRef(),
+        phoneRef = React.createRef(),
+        addressRef = React.createRef(),
+        descRef = React.createRef()
+
     const PowerSocketImg = require("../../images/powerSocket.png")
     // const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/00d6f2b582bb/powerSocket.png?extra=lEKjEv3fDS6VHCBtDD9t1M9grxSRXRtQXNW3_KghL2dg61qIcfScRy2gOB_OjoLmVvboMvqoTfZEMdCQS_8jJinGGJBJL6yxkIPB2EWxWrjT7uhobwb98RvXXQt7Xha1CiSEP8dbL-Do2WktKYs", "Anonymous")
     const [SwitcherImg] = useImage("../../images/switcher.png", 'Anonymous')
@@ -331,12 +339,39 @@ function Editor(props) {
         )
         pdf.save("canvas.pdf")
     }
+
+    const send = () => {
+        const app = {
+            customer: {
+                name: nameRef.current.value,
+                phone: phoneRef.current.value
+            },
+            costs: {
+                workCost: props.workCost,
+                materialCost: props.materialCost
+            },
+            queue: [...props.queue],
+            address: addressRef.current.value,
+        }
+        createApp(app)
+    }
+
     const clearQueue = () =>
         props.clearQueue()
 
 
     return (
         <div className={s.editor}>
+            <form className={s.form} autoComplete="on" onSubmit={event => {
+                event.preventDefault()
+                send()
+            }}>
+                <input ref={nameRef} type='text' placeholder="Имя и фамилия" required/>
+                <input ref={phoneRef} type='tel' placeholder='Контактный номер телефона' required />
+                <input ref={addressRef} type='text' placeholder='Адрес объекта' required/>
+                <input ref={descRef} type='text' placeholder="Примечания" />
+                <button type='submit'>Отправить</button>
+            </form>
             <Toolbar setCurrentShape={props.setCurrentShape} debug={debug} save={save} clearQueue={clearQueue}
                      shapes={props.shapes}/>
             <div>

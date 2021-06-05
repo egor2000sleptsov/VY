@@ -1,8 +1,8 @@
 import React from "react"
 import {Redirect, Route, Switch} from "react-router-dom"
 import Application from "./pages/Application";
-import DetailPage from "./pages/DetailPage";
 import EditorContainer from "./pages/editor/EditorContainer";
+import Admin from "./pages/admin/Admin";
 
 export const useRoutes = isAuth => {
     if (isAuth)
@@ -10,8 +10,7 @@ export const useRoutes = isAuth => {
             <Switch>
                 <Route exact path='/' render={() => <Application/>}/>
                 <Route path='/editor' render={() => <EditorContainer/>}/>
-                <Route path='/detail/:id' render={() => <DetailPage/>}/>
-                <Redirect to='/'/>
+                <Route path='/admin' render={() => <Admin/>}/>
             </Switch>
         )
 
