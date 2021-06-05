@@ -1,16 +1,18 @@
 import React from "react"
 import {Redirect, Route, Switch} from "react-router-dom"
-import Application from "./pages/Application";
+import Application from "./pages/admin/Application/Application";
 import EditorContainer from "./pages/editor/EditorContainer";
-import Admin from "./pages/admin/Admin";
+import AdminContainer from "./pages/admin/AdminContainer";
+import Editor from "./pages/editor/Editor";
 
 export const useRoutes = isAuth => {
     if (isAuth)
         return (
             <Switch>
-                <Route exact path='/' render={() => <Application/>}/>
+                {/*<Route exact path='/' render={() => <Editor/>}/>*/}
                 <Route path='/editor' render={() => <EditorContainer/>}/>
-                <Route path='/admin' render={() => <Admin/>}/>
+                <Route exact path='/admin' render={() => <AdminContainer/>}/>
+                <Route path='/admin/:id' render={() => <Application/>}/>
             </Switch>
         )
 
