@@ -6,8 +6,6 @@ import InfoPanel from "./InfoPanel/InfoPanel";
 import useImage from "use-image";
 import {jsPDF} from "jspdf"
 import {abs, round, sign, sin, sqrt} from 'mathjs'
-import {getAllApp} from "../../axios/getAllApp";
-import {getById} from "../../axios/getById";
 import {createApp} from "../../axios/createApp";
 import { Button } from '@material-ui/core';
 
@@ -363,7 +361,7 @@ function Editor(props) {
     const [showForm, setShowForm] = useState(false)
     return (
         <div className={s.editor}>
-            
+
             {showForm && (
                 <div className={s.modalWrapper}>
                     <div className={s.modalForm}>
@@ -381,10 +379,10 @@ function Editor(props) {
                     </div>
                 </div>
             )}
-            <Toolbar 
-                setCurrentShape={props.setCurrentShape} 
-                debug={debug} 
-                save={save} 
+            <Toolbar
+                setCurrentShape={props.setCurrentShape}
+                debug={debug}
+                save={save}
                 clearQueue={clearQueue}
                 shapes={props.shapes}
                 setShowForm={setShowForm}

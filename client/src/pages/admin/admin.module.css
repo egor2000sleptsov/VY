@@ -1,3 +1,38 @@
 .main {
-    padding-top: 250px;
+    display: flex;
+    justify-content: center;
+}
+
+.modalWrapper {
+    width: 100%;
+    padding-top: 116px;
+    height: 1000px;
+    background-color: aqua;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modalForm {
+    width: 30%;
+    height: 30%;
+    background-color: bisque;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.admin {
+    padding-top: 116px;
+    width: 70%;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: cornsilk;
+    margin: 10px;
+    height: 70px;
+    padding: 20px;
 }

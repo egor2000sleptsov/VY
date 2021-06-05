@@ -2,13 +2,13 @@ import axios from "./index";
 
 export const getById = async id => {
     try {
-        const response = await axios.post('api/application', {
+        return  await axios.post('api/application', {
             method: "receive",
             submethod: "byId",
-            id: "60b8a187a9b2b70bac19ba03" //todo
+            id: id
         })
             .then(res => {
-            console.log(res.data)
+                return res.data
         })
     }
     catch (e) {
