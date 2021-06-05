@@ -1,14 +1,15 @@
 export default (req, res) => {
+    const ObjectId = global.db.mongoose.Types.ObjectId
     const {id} = req.body
-
-    if (global.db.mongoose.Types.ObjectId.isValid(id)) {
+    console.log(req.body)
+    if (!global.db.mongoose.Types.ObjectId.isValid(id)) {
         res.send(global.listStatus.notSuccess("invalid ID"))
         return null
     }
-    global.db.models.Application.findById(id, (err, doc) => {
+    global.db.models.Application.findOne({_id: ObjectId(id)}, (err, doc) => {
         if (err)
             throw err
-        if (!doc){
+        if (!doc) {
             res.send(global.listStatus.notExist(id))
             return null
         }

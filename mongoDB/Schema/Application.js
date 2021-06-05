@@ -2,10 +2,6 @@ import mongoose from "mongoose";
 const Schema = mongoose.Schema
 
 const Application = new Schema({
-    id: {
-        required: true,
-        type: Number
-    },
     customer: {
         name: {
             type: String,
@@ -33,6 +29,14 @@ const Application = new Schema({
             type: Number,
             required: true
         }
+    },
+    description: {
+        type: String,
+        default: ''
+    },
+    status: {
+        type: String,
+        default: 'На расмотрении'
     }
 
 })

@@ -4,6 +4,7 @@ import dotenv from "dotenv"
 import express from "express";
 import listStatus from "./ListStatus/index.js"
 import multer from "multer"
+import cors from "cors"
 
 dotenv.config()
 

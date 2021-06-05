@@ -1,6 +1,8 @@
 const handler = (req, res) => {
+    res.setHeader("Access-Control-Allow-Headers", "origin, content-type, accept")
+    res.setHeader("Access-Control-Allow-Origin", "*")
     const {query} = req.body
-    console.log(query)
+    console.log(req.body)
     if (!query)
         res.send(global.listStatus.notSuccess({query: query}))
     else {
