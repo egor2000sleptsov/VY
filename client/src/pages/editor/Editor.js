@@ -9,6 +9,7 @@ import {abs, round, sign, sin, sqrt} from 'mathjs'
 import {getAllApp} from "../../axios/getAllApp";
 import {getById} from "../../axios/getById";
 import {createApp} from "../../axios/createApp";
+import { Button } from '@material-ui/core';
 
 function Editor(props) {
     const nameRef = React.createRef(),
@@ -359,21 +360,35 @@ function Editor(props) {
     const clearQueue = () =>
         props.clearQueue()
 
-
+    const [showForm, setShowForm] = useState(false)
     return (
         <div className={s.editor}>
-            <form className={s.form} autoComplete="on" onSubmit={event => {
-                event.preventDefault()
-                send()
-            }}>
-                <input ref={nameRef} type='text' placeholder="Имя и фамилия" required/>
-                <input ref={phoneRef} type='tel' placeholder='Контактный номер телефона' required />
-                <input ref={addressRef} type='text' placeholder='Адрес объекта' required/>
-                <input ref={descRef} type='text' placeholder="Примечания" />
-                <button type='submit'>Отправить</button>
-            </form>
-            <Toolbar setCurrentShape={props.setCurrentShape} debug={debug} save={save} clearQueue={clearQueue}
-                     shapes={props.shapes}/>
+            
+            {showForm && (
+                <div className={s.modalWrapper}>
+                    <div className={s.modalForm}>
+                        <form className={s.form} autoComplete="on" onSubmit={event => {
+                            event.preventDefault()
+                            send()
+                        }}>
+                            <input ref={nameRef} type='text' placeholder="Имя и фамилия" required/>
+                            <input ref={phoneRef} type='tel' placeholder='Контактный номер телефона' required />
+                            <input ref={addressRef} type='text' placeholder='Адрес объекта' required/>
+                            <input ref={descRef} type='text' placeholder="Примечания" />
+                            <Button type='submit'>Отправить</Button>
+                            <Button onClick={() => setShowForm(false)} >Вернуться</Button>
+                        </form>
+                    </div>
+                </div>
+            )}
+            <Toolbar 
+                setCurrentShape={props.setCurrentShape} 
+                debug={debug} 
+                save={save} 
+                clearQueue={clearQueue}
+                shapes={props.shapes}
+                setShowForm={setShowForm}
+            />
             <div>
                 <InfoPanel materialCost={props.materialCost} workCost={props.workCost}/>
                 <div onMouseOut={mouseOutHandler}>

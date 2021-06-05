@@ -11,6 +11,7 @@ function Toolbar(props) {
             <Button onClick={props.debug}>Debugger</Button>
             <Button onClick={props.save}>Скачать</Button>
             <Button onClick={props.clearQueue}>Clear All</Button>
+            <Button onClick={() => props.setShowForm(true)} >Показать форму</Button>
         </div>
     );
 }
