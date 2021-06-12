@@ -5,9 +5,9 @@
 
 .modalWrapper {
     width: 100%;
-    padding-top: 116px;
-    height: 1000px;
-    background-color: aqua;
+    padding-top: 85px;
+    height: 900px;
+    background-color: white;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -16,23 +16,54 @@
 .modalForm {
     width: 30%;
     height: 30%;
-    background-color: bisque;
+    background-color: #ffffff;
+    border: 1px solid #3f51b5 ;
+    border-radius: 15px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .admin {
-    padding-top: 116px;
-    width: 70%;
+    padding-top: 85px;
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    justify-content: space-around;
+    align-items: stretch;
 }
 
 .item {
+    border-radius: 5px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: cornsilk;
+    background-color: #e8e8e8;
     margin: 10px;
     height: 70px;
     padding: 20px;
+}
+
+.link {
+    color: white !important;
+}
+
+.address {
+    display: flex;
+    width: 20%;
+    padding: 5px;
+
+}
+
+.name {
+    display: flex;
+    padding: 5px;
+    width: 20%;
+}
+
+.status {
+    display: flex;
+    padding: 5px;
+    width: 20%;
 }

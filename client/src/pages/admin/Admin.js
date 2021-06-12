@@ -27,29 +27,27 @@ function Admin(props) {
         e.preventDefault()
         setAuth(passRef.current.value)
     }
-    if (!isAuth) {
-        return (
-            <div className={s.main} >
-                <div className={s.modalWrapper}>
-                    <div className={s.modalForm}>
-                        <form onSubmit={e => onSubmit(e)}>
-                            <label >Введите пароль для входа</label>
-                            <input type="text" required ref={passRef}/>
-                            <Button type="submit">Подтвердить</Button>
-                        </form>
-                    </div>
+    return !isAuth ? (
+        <div className={s.main}>
+            <div className={s.modalWrapper}>
+                <div className={s.modalForm}>
+                    <form onSubmit={e => onSubmit(e)}>
+                        <label>Введите пароль для входа</label>
+                        <input type="password" required ref={passRef}/>
+                        <Button variant="contained" color="primary" type="submit">Подтвердить</Button>
+                    </form>
                 </div>
             </div>
-        );
-    }
-
-    return (
+        </div>
+    ) : (
         <div className={s.main}>
             <div className={s.admin}>
-                {data && data.map((el, index) => (<Item el={el} key={index}/>))}
+                <h4>Список заявлений</h4>
+                {data && data.reverse().map((el, index) => (<Item el={el} key={index}/>))}
             </div>
         </div>
-    )
+    );
+
 }
 
 export default Admin;

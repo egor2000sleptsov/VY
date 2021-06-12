@@ -6,6 +6,7 @@ function InfoPanel(props) {
         <div className={s.infopanel}>
             <h5>Стоимость материалов: {props.materialCost}</h5>
             <h5>Стоимость услуги мастера: {props.workCost}</h5>
+            <h5>Сумма : {props.workCost + props.materialCost}</h5>
         </div>
     );
 }

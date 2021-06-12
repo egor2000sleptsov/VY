@@ -1,7 +1,7 @@
 export default (req, res) => {
     let app = JSON.parse(req.body.app)
     if (!app) {
-        res.send(global.listStatus.notSuccess("app is indefined"))
+        res.send(global.listStatus.notSuccess("app is undefined"))
         return null
     }
     try {
