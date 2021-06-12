@@ -5,7 +5,7 @@ import Toolbar from "./Toolbar/Toolbar";
 import InfoPanel from "./InfoPanel/InfoPanel";
 import useImage from "use-image";
 import {jsPDF} from "jspdf"
-import {abs, round, sign, sin, sqrt} from 'mathjs'
+import {abs, round, sign, sin, sqrt, asin, pi} from 'mathjs'
 import {createApp} from "../../axios/createApp";
 import { Button } from '@material-ui/core';
 
@@ -15,25 +15,25 @@ function Editor(props) {
         addressRef = React.createRef(),
         descRef = React.createRef()
 
-    const PowerSocketImg = require("../../images/powerSocket.png")
-    // const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/00d6f2b582bb/powerSocket.png?extra=lEKjEv3fDS6VHCBtDD9t1M9grxSRXRtQXNW3_KghL2dg61qIcfScRy2gOB_OjoLmVvboMvqoTfZEMdCQS_8jJinGGJBJL6yxkIPB2EWxWrjT7uhobwb98RvXXQt7Xha1CiSEP8dbL-Do2WktKYs", "Anonymous")
-    const [SwitcherImg] = useImage("../../images/switcher.png", 'Anonymous')
-    const [LampImg] = useImage("https://sun9-42.userapi.com/impg/KUCVGso6Oyr0E2NNuQWwduZuBcUm6lJ_uz7ZQw/yrZ8H5t2lQc.jpg?size=413x443&quality=96&sign=9af690b728385b82f516f16377a8b618&type=album", "Anonymous")
+    const [SwitcherImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d50/94ec29f1eb93/switcher.png?extra=n1Tv23afu2_Ch2ouxES9jGJAznoRaXnjBlhfED-SB0w-BeziWF8WzOQS7sLcCDIfRKyrMXTw51Th_5qX_Ow6485XSX1-eaLWX4SjrEiN57x7huEYIP3vLBNoRjOKNyKAo_JtKxyCd5vl91vA1M44_Q", 'Anonymous')
+    const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/3b2c0de935df/powerSocket.png?extra=stx_5ouk-NNPC1vMQJfnyiJru9X07LJ2hgy2GAzQtjcRcDfwXYK2y-MzK6C6HB_pAMaSnVMF0TaBj7_66sK-bHmGXC_lq-ACHNUa8zE8Ri9ze_eijwe8ptcESsBUyx9fta6tGXWQOPWQA9h0TOfEjg", 'Anonymous')
+    const [LampImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d12/b602701a0951/lamp.png?extra=AgbIDHBEPjLz0v8zyWS6FJCBChzOkzEJxaDWy1ti_2OqL86iaq7EtFnr5gnepuXoUnMPlZlqFY4t3Er6bShhwykzts7Pk6kIb4BeOZEVVJkB-DBlGyVZy_co1XJ9FVZUgEry_WMTUyM4pz8OZS76Zw", "Anonymous")
 
     const formatQueue = queue => {
         let tmp = []
         queue.forEach((el) => {
             switch (el.type) {
                 case "Line":
-                    const katet = sqrt(el.height * el.height + el.width * el.width)
+                    const Gypotenuse = sqrt(el.height * el.height + el.width * el.width)
                     tmp.push((<Line x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black"
                                     points={[0, 0, el.width, el.height]} draggable={true} onDragStart={dragStart}/>))
                     tmp.push((<Text
-                        text={`${round(katet * 10)}мм`}
+                        text={`${round(Gypotenuse * 10)}мм`}
                         x={el.x + el.width / 2 - 17}
                         y={el.y + el.height / 2 - 17}
                         fontSize={17}
-                        rotation={sin((el.height) / katet) * 90 * sign(el.width)}
+                        rotation={asin(abs(el.height) / Gypotenuse ) * 180/pi * sign(el.height) * sign(el.width)}
+                        // rotation={sin((el.height) / Gypotenuse) * 90 * sign(el.width)}
                     />))
 
                     break
@@ -75,7 +75,7 @@ function Editor(props) {
                     break
             }
         })
-        return tmp;
+        return tmp
     }
 
     const canvas = React.createRef()
@@ -154,7 +154,7 @@ function Editor(props) {
 
         switch (props.currentShape.type) {
             case "Line":
-                const katet = sqrt(newHeight * newHeight + newWidth * newWidth)
+                const Gypotenuse = sqrt(newHeight * newHeight + newWidth * newWidth)
                 setShape(<Line
                     x={shape.props.x}
                     y={shape.props.y}
@@ -164,12 +164,16 @@ function Editor(props) {
                     stroke="black"
                     ref={shapeRef}
                 />)
+                // console.log(asin(abs(newHeight) / Gypotenuse ) * 180/pi * sign(newHeight) * sign(newWidth))
+                // console.log("newHeight "+newHeight)
+                // console.log("newWidth "+newWidth)
                 setExtraShape(<Text
-                    text={`${round(katet * 10)}мм`}
+                    text={`${round(Gypotenuse * 10)}мм`}
                     x={shape.props.x + newWidth / 2 - 17}
                     y={shape.props.y + newHeight / 2 - 17}
                     fontSize={17}
-                    rotation={sin((newHeight) / katet) * 90 * sign(newWidth)}
+                    rotation={asin(abs(newHeight) / Gypotenuse ) * 180/pi * sign(newHeight) * sign(newWidth)}
+
                 />)
                 break
             case "Rect":
@@ -339,6 +343,8 @@ function Editor(props) {
         pdf.save("canvas.pdf")
     }
 
+
+    const [isSend, setIsSend] = useState(false)
     const send = () => {
         const app = {
             customer: {
@@ -353,6 +359,7 @@ function Editor(props) {
             address: addressRef.current.value,
         }
         createApp(app)
+            .then(setIsSend(true))
     }
 
     const clearQueue = () =>
@@ -365,6 +372,7 @@ function Editor(props) {
             {showForm && (
                 <div className={s.modalWrapper}>
                     <div className={s.modalForm}>
+                        {isSend && (<div> Отправлено !</div>)}
                         <form className={s.form} autoComplete="on" onSubmit={event => {
                             event.preventDefault()
                             send()
@@ -373,8 +381,12 @@ function Editor(props) {
                             <input ref={phoneRef} type='tel' placeholder='Контактный номер телефона' required />
                             <input ref={addressRef} type='text' placeholder='Адрес объекта' required/>
                             <input ref={descRef} type='text' placeholder="Примечания" />
-                            <Button type='submit'>Отправить</Button>
-                            <Button onClick={() => setShowForm(false)} >Вернуться</Button>
+                            <Button color="primary" variant="outlined"
+                                    onClick={() => {
+                                        setShowForm(false)
+                                        setIsSend(false)
+                                    }} >Вернуться</Button>
+                            <Button style={{marginLeft: 10}} type='submit' variant="contained" color="primary">Отправить</Button>
                         </form>
                     </div>
                 </div>
@@ -387,18 +399,19 @@ function Editor(props) {
                 shapes={props.shapes}
                 setShowForm={setShowForm}
             />
-            <div>
+            <div className={s.infoAndCanvas}>
                 <InfoPanel materialCost={props.materialCost} workCost={props.workCost}/>
-                <div onMouseOut={mouseOutHandler}>
+                <div >
                     <Stage
                         className={s.canvas}
                         ref={canvas}
-                        width={1000}
-                        height={1000}
-                        // onMouseDown={mouseDownHandler}
-                        onContentMousedown={mouseDownHandler}
+                        width={1530}
+                        height={720}
+                        onMouseDown={mouseDownHandler}
+                        // onContentMousedown={mouseDownHandler}
                         onMouseUp={mouseUpHandler}
                         onMousemove={mouseMoveHandler}
+                        // onMouseOut={mouseOutHandler}
                     >
                         <Layer ref={layer}>
                             {extraShape1}
@@ -407,6 +420,10 @@ function Editor(props) {
                             {shape}
                         </Layer>
                     </Stage>
+                </div>
+                <div className={s.buttons}>
+                    <Button onClick={(e) => setShowForm(true)} variant="outlined" color="primary">Отправить Форму</Button>
+                    <Button onClick={(e) => save()} variant="contained" color="primary">Скачать в .PDF</Button>
                 </div>
             </div>
         </div>

@@ -41,6 +41,7 @@ const Application = new Schema({
 
 })
 
+
 Application.methods.log = function () {
     console.log('sss')
 }

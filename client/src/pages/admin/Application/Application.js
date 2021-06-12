@@ -1,29 +1,29 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from "react-router-dom"
+import {NavLink, useParams} from "react-router-dom"
 import {getById} from "../../../axios/getById";
 import s from './Application.module.css'
 import {Image, Layer, Line, Rect, Stage, Text} from "react-konva";
 import {Button} from "@material-ui/core";
 import jsPDF from "jspdf";
-import {abs, round, sign, sin, sqrt} from "mathjs";
+import {abs, asin, pi, round, sign, sin, sqrt} from "mathjs";
 import useImage from "use-image";
 
 function Application(props) {
     const formatQueue = queue => {
-        debugger
         let tmp = []
         queue.forEach((el) => {
             switch (el.type) {
                 case "Line":
-                    const katet = sqrt(el.height * el.height + el.width * el.width)
+                    const Gypotenuse = sqrt(el.height * el.height + el.width * el.width)
                     tmp.push((<Line x={el.x} y={el.y} key={el.id} ref={{current: null}} stroke="black"
                                     points={[0, 0, el.width, el.height]} />))
                     tmp.push((<Text
-                        text={`${round(katet * 10)}мм`}
+                        text={`${round(Gypotenuse * 10)}мм`}
                         x={el.x + el.width / 2 - 17}
                         y={el.y + el.height / 2 - 17}
                         fontSize={17}
-                        rotation={sin((el.height) / katet) * 90 * sign(el.width)}
+                        // rotation={sin((el.height) / katet) * 90 * sign(el.width)}
+                        rotation={asin(abs(el.height) / Gypotenuse ) * 180/pi * sign(el.height) * sign(el.width)}
                     />))
 
                     break
@@ -68,10 +68,9 @@ function Application(props) {
         return tmp;
     }
 
-    const PowerSocketImg = require("../../../images/powerSocket.png")
-    // const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/00d6f2b582bb/powerSocket.png?extra=lEKjEv3fDS6VHCBtDD9t1M9grxSRXRtQXNW3_KghL2dg61qIcfScRy2gOB_OjoLmVvboMvqoTfZEMdCQS_8jJinGGJBJL6yxkIPB2EWxWrjT7uhobwb98RvXXQt7Xha1CiSEP8dbL-Do2WktKYs", "Anonymous")
-    const [SwitcherImg] = useImage("../../images/switcher.png", 'Anonymous')
-    const [LampImg] = useImage("https://sun9-42.userapi.com/impg/KUCVGso6Oyr0E2NNuQWwduZuBcUm6lJ_uz7ZQw/yrZ8H5t2lQc.jpg?size=413x443&quality=96&sign=9af690b728385b82f516f16377a8b618&type=album", "Anonymous")
+    const [SwitcherImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d50/94ec29f1eb93/switcher.png?extra=n1Tv23afu2_Ch2ouxES9jGJAznoRaXnjBlhfED-SB0w-BeziWF8WzOQS7sLcCDIfRKyrMXTw51Th_5qX_Ow6485XSX1-eaLWX4SjrEiN57x7huEYIP3vLBNoRjOKNyKAo_JtKxyCd5vl91vA1M44_Q", 'Anonymous')
+    const [PowerSocketImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d5/3b2c0de935df/powerSocket.png?extra=stx_5ouk-NNPC1vMQJfnyiJru9X07LJ2hgy2GAzQtjcRcDfwXYK2y-MzK6C6HB_pAMaSnVMF0TaBj7_66sK-bHmGXC_lq-ACHNUa8zE8Ri9ze_eijwe8ptcESsBUyx9fta6tGXWQOPWQA9h0TOfEjg", 'Anonymous')
+    const [LampImg] = useImage("https://psv4.userapi.com/c536436/u189412517/docs/d12/b602701a0951/lamp.png?extra=AgbIDHBEPjLz0v8zyWS6FJCBChzOkzEJxaDWy1ti_2OqL86iaq7EtFnr5gnepuXoUnMPlZlqFY4t3Er6bShhwykzts7Pk6kIb4BeOZEVVJkB-DBlGyVZy_co1XJ9FVZUgEry_WMTUyM4pz8OZS76Zw", "Anonymous")
 
 
     const canvas = React.createRef();
@@ -126,17 +125,24 @@ function Application(props) {
     return (
         <div className={s.main}>
             <div className={s.infoPanel}>
-                <div>Имя и Фамилия: {data.customer.name}</div>
-                <div>Номер телефона: {data.customer.phone}</div>
-                <div>Адрес Объекта: {data.address}</div>
-                <div>Прим. цена за работу мастера: {data.costs.workCost} рублей</div>
-                <div>Прим. цена за материалы: {data.costs.materialCost} рублей</div>
-                <Button variant="outlined" onClick={save}>Скачать проект</Button>
+                <div>Имя и Фамилия: <b>{data.customer.name}</b></div>
+                <div>Номер телефона: <b>{data.customer.phone}</b></div>
+                <div>Адрес Объекта: <b>{data.address}</b></div>
+                <div>Стоимость работы мастера: <b>{data.costs.workCost}</b> р.</div>
+                <div>Стоимость материалы: <b>{data.costs.materialCost}</b> р.</div>
+                <div className={s.buttons}>
+                    <Button color="primary" variant="outlined">
+                        <NavLink className={s.link} to={`/admin`}>
+                            Назад
+                        </NavLink>
+                    </Button>
+                    <Button color="primary" variant="contained" onClick={save}>Скачать проект</Button>
+                </div>
             </div>
             <div className={s.canvas}>
                 <Stage
-                    width={1000}
-                    height={1000}
+                    width={1530}
+                    height={720}
                     ref={canvas}
                 >
                     <Layer>
